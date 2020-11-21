@@ -35,6 +35,20 @@ Page({
       })
     }
   },
+  onCloseConnection: async function () {
+    if (!this.data.connectBle.deviceId) return
+    console.log('close connect ble start')
+    // need close Connection
+    const closeConnectRes = await util.wxAsyncPromise('closeBLEConnection', {
+      deviceId: this.data.connectBle.deviceId
+    })
+    if (closeConnectRes._fail) return
+    this.setData({
+      connectBle: {},
+      connectDevice: null
+    })
+    console.log('close connect ble ', closeConnectRes.errMsg)
+  },
   onConnectBlueItem: async function (event) {
     wx.showLoading({
       title: 'connecting ...'
@@ -43,16 +57,7 @@ Page({
       const deviceId = event.currentTarget.dataset.id
       console.log('click ble item', deviceId)
       if (this.data.connectBle.deviceId) {
-        // need close Connection
-        const closeConnectRes = await util.wxAsyncPromise('closeBLEConnection', {
-          deviceId
-        })
-        if (closeConnectRes._fail) return
-        this.setData({
-          connectBle: {},
-          connectDevice: null
-        })
-        console.log('close connect ble ', closeConnectRes.errMsg)
+        this.onCloseConnection()
         return
       }
       // ===== into connect =====
@@ -121,7 +126,50 @@ Page({
     if (!this.data.scaning) this.startScan()
     if (this.data.scaning) this.stopScan()
   },
-  onHide: function () {
+  onUnload: function () {
+    if (this.data.connectBle.deviceId) this.onCloseConnection()
     if (this.data.scaning) this.stopScan()
   },
+  // select image
+  // show image
+  // hanlde image
+  // to byte data
+  // send data
+  onWirteByConnect: async function () {
+    if (!this.data.connectBle.deviceId) return
+    const {
+      deviceId,
+      serviceId,
+      characteristicId,
+    } = this.data.connectBle
+    wx.navigateTo({
+      url: '../canvas/index',
+      events: {
+        onSendBleData: async function (data) {
+          console.log('get data from canvas')
+          for (let i = 0; i < data.length; i++) {
+            const uint8StringArr = data[i];
+            const t_buffer = new ArrayBuffer(uint8StringArr.length)
+            const t_dv = new DataView(t_buffer)
+            uint8StringArr.forEach((b, offset) => t_dv.setUint8(offset, parseInt(b)))
+            const writeResult = await util.wxAsyncPromise('writeBLECharacteristicValue', {
+              deviceId,
+              serviceId,
+              characteristicId,
+              value: t_buffer,
+            })
+            console.log('writeBLECharacteristicValue', `data index : ${i} ,`, writeResult.errMsg)
+            if (writeResult._fail) {
+              break
+            }
+            wx.showToast({
+              title: `SEND(${i+1}/${data.length})...`,
+              icon: 'success',
+              duration: 500
+            })
+          }
+        },
+      },
+    })
+  }
 })

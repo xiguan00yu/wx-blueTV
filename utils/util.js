@@ -30,8 +30,55 @@ function wxAsyncPromise(name, options) {
     });
   });
 }
+/**
+ * @param {*} data uint8ClampedArray
+ * @param {*} width number
+ * @param {*} height number
+ */
+function uint8ClampedArrayToHexString(data, width, height, threshold = 128) {
+  let output_string = "";
+  let output_index = 0;
+
+  let byteIndex = 7;
+  let number = 0;
+
+  // data format RGBA, move 4 steps
+  for (let index = 0; index < data.length; index += 4) {
+    // Get the average of the RGB (we ignore A)
+    let avg = (data[index] + data[index + 1] + data[index + 2]) / 3;
+    if (avg > threshold) {
+      number += Math.pow(2, byteIndex);
+    }
+    byteIndex--;
+
+    // if this was the last pixel of a row or the last pixel of the
+    // image, fill up the rest of our byte with zeros so it always contains 8 bits
+    if ((index != 0 && (((index / 4) + 1) % (width)) == 0) || (index == data.length - 4)) {
+      byteIndex = -1;
+    }
+
+    // When complete 8 bits, merge a hex value
+    if (byteIndex < 0) {
+      let byteSet = number.toString(16);
+      if (byteSet.length == 1) {
+        byteSet = "0" + byteSet;
+      }
+      let b = "0x" + byteSet;
+      output_string += b + ", ";
+      output_index++;
+      if (output_index >= 16) {
+        output_string += "\n";
+        output_index = 0;
+      }
+      number = 0;
+      byteIndex = 7;
+    }
+  }
+  return output_string;
+}
 
 module.exports = {
   formatTime,
-  wxAsyncPromise
+  wxAsyncPromise,
+  uint8ClampedArrayToHexString
 }

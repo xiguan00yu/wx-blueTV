@@ -1,0 +1,16 @@
+<!--index.wxml-->
+<page-meta>
+	<navigation-bar title="BlueTV - WIRTE" loading="{{loading}}" />
+</page-meta>
+<view class="container">
+	<view class="fc top-bar m-1" hover-class="hover" bindlongtap="toLogScreen" bindtap="onChooseImageWithDraw">
+		<text class="h4 m-1">CHOOSE IMAGE FOR WIRTE</text>
+		<view class="frn">
+			<button class="m-1" type="default" catchtap="onConvertImage">CONVERT</button>
+			<view class="m-1" />
+			<button class="m-1" type="warn" catchtap="onWirteByBle">WIRTE</button>
+		</view>
+	</view>
+	<canvas type="2d" disable-scroll="true" id="canvas_box" style="width:{{fixedSize.width}}px;height:{{fixedSize.height}}px"></canvas>
+	<textarea placeholder="generate code..." id="code_box" value="{{convertImageHexString}}" maxlength="-1" wx:if="{{!!convertImageHexString}}"></textarea>
+</view> 

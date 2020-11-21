@@ -1,0 +1,32 @@
+/**index.wxss**/
+.container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+#canvas_box {
+  margin-top: 10vh;
+  margin-bottom: 10vh;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.top-bar {
+  padding: 16px;
+  padding-left: 8px;
+  padding-right: 8px;
+  background-color: white;
+  border-bottom: 1px solid #f8f8f8;
+  border-radius: 8px;
+  display: flex;
+}
+
+#code_box {
+  border: 1px solid #d3d3d3;
+  max-height: 10vh;
+  min-height: 100px;
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+}

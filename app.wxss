@@ -11,7 +11,8 @@ page {
 
 .hover {
   opacity: 0.8;
-  background-color: #F8F8F8;
+  scale: 0.8;
+  background-color: #dddddd;
 }
 
 .frn {
@@ -69,3 +70,14 @@ page {
   font-size: 12px;
 }
 
+.bt-link {
+  padding: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
+  font-style: oblique;
+  border-bottom: 1px #d5d5d5 solid;
+}
+
+.bt-link:hover {
+  background-color: #d5d5d5;
+}
