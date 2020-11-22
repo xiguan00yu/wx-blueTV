@@ -77,8 +77,19 @@ function uint8ClampedArrayToHexString(data, width, height, threshold = 128) {
   return output_string;
 }
 
+/**
+ * 
+ * @param {*} time 1s
+ */
+function delay(time = 1) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve(1), time * 1000)
+  })
+}
+
 module.exports = {
   formatTime,
   wxAsyncPromise,
-  uint8ClampedArrayToHexString
+  uint8ClampedArrayToHexString,
+  delay
 }

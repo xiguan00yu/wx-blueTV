@@ -8,7 +8,7 @@ Page({
     canvas: null,
     threshold: 128,
     convertImageHexString: '',
-    splitSendDataLength: 16,
+    splitSendDataLength: 8,
     fixedSize: {
       width: 128,
       height: 64
@@ -128,15 +128,19 @@ Page({
     this.setData({
       convertImageHexString: bleData
     })
-    // split string and group arr , 4 unit
-    const uint8Arr = bleData.replace('\n', '').split(', ').reduce((arr, unit) => {
-      if (arr.length === 0 || arr[arr.length - 1].length >= splitArrayLength)
-        arr.push([])
-      const lastUnitArr = arr.pop()
-      lastUnitArr.push(unit)
-      arr.push(lastUnitArr)
-      return arr
-    }, [])
+    // split string and group arr , splitArrayLength unit
+    const uint8Arr = bleData
+      .replace('\n', '')
+      .split(',')
+      .filter(b => b.includes('0'))
+      .reduce((arr, unit) => {
+        if (arr.length === 0 || arr[arr.length - 1].length >= splitArrayLength)
+          arr.push([])
+        const lastUnitArr = arr.pop()
+        lastUnitArr.push(unit)
+        arr.push(lastUnitArr)
+        return arr
+      }, [])
     // for send blueData
     const eventChannel = this.getOpenerEventChannel()
     eventChannel.emit('onSendBleData', uint8Arr);

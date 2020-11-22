@@ -167,8 +167,9 @@ Page({
             wx.showToast({
               title: `SEND(${i+1}/${data.length})...`,
               icon: 'success',
-              duration: 500
+              duration: 550
             })
+            await util.delay(0.5)
           }
         },
       },
