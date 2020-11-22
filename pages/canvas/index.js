@@ -8,6 +8,7 @@ Page({
     canvas: null,
     threshold: 128,
     convertImageHexString: '',
+    splitSendDataLength: 16,
     fixedSize: {
       width: 128,
       height: 64
@@ -116,6 +117,7 @@ Page({
   onWirteByBle: async function () {
     const drawCanvas = this.data.canvas
     if (!drawCanvas) return
+    const splitArrayLength = this.data.splitSendDataLength
     const drawImageSize = this.data.fixedSize
     const ctx = drawCanvas.getContext('2d')
     this.setData({
@@ -128,7 +130,7 @@ Page({
     })
     // split string and group arr , 4 unit
     const uint8Arr = bleData.replace('\n', '').split(', ').reduce((arr, unit) => {
-      if (arr.length === 0 || arr[arr.length - 1].length >= 4)
+      if (arr.length === 0 || arr[arr.length - 1].length >= splitArrayLength)
         arr.push([])
       const lastUnitArr = arr.pop()
       lastUnitArr.push(unit)

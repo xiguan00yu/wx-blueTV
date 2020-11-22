@@ -149,9 +149,11 @@ Page({
           console.log('get data from canvas')
           for (let i = 0; i < data.length; i++) {
             const uint8StringArr = data[i];
-            const t_buffer = new ArrayBuffer(uint8StringArr.length)
+            const t_buffer = new ArrayBuffer(uint8StringArr.length + 1)
             const t_dv = new DataView(t_buffer)
-            uint8StringArr.forEach((b, offset) => t_dv.setUint8(offset, parseInt(b)))
+            // set position index
+            t_dv.setUint8(0, i)
+            uint8StringArr.forEach((b, offset) => t_dv.setUint8(offset + 1, parseInt(b)))
             const writeResult = await util.wxAsyncPromise('writeBLECharacteristicValue', {
               deviceId,
               serviceId,
