@@ -11,6 +11,16 @@
 			<button class="m-1" type="warn" catchtap="onWirteByBle">WIRTE</button>
 		</view>
 	</view>
+	<view class="fc top-bar m-1" wx:if="{{!!chooseImageInfo}}" style="margin-top:0;">
+		<view class="frn">
+			<text class="p m-1">Invert image colors: </text>
+			<checkbox class="m-1" value="{{invertColors}}" data-name="invertColors" bindtap="bindFormInput" />
+		</view>
+		<view class="frn">
+			<text class="p m-1">Alpha threshold: </text>
+			<input class="threshold-input m-1" maxlength="3" type="number" data-name="threshold" bindinput="bindFormInput" value="{{threshold}}" />
+		</view>
+	</view>
 	<canvas type="2d" disable-scroll="true" id="canvas_box" style="width:{{fixedSize.width}}px;height:{{fixedSize.height}}px"></canvas>
 	<textarea placeholder="generate code..." id="code_box" value="{{convertImageHexString}}" maxlength="-1" wx:if="{{!!convertImageHexString}}"></textarea>
 </view> 

@@ -167,7 +167,7 @@ Page({
             wx.showToast({
               title: `SEND(${i+1}/${data.length})...`,
               icon: 'success',
-              duration: 550
+              duration: 600
             })
             await util.delay(0.5)
           }

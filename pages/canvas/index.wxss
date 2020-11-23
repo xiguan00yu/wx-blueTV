@@ -30,3 +30,7 @@
   position: absolute;
   bottom: 0;
 }
+
+.threshold-input {
+  border-bottom: 1px solid #f8f8f8;
+}

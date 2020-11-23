@@ -7,8 +7,13 @@ Page({
     loading: false,
     canvas: null,
     threshold: 128,
+    invertColors: false,
     convertImageHexString: '',
+    // when send bluethood data , one array length
     splitSendDataLength: 8,
+    // choose image
+    chooseImageInfo: null,
+    // display screen
     fixedSize: {
       width: 128,
       height: 64
@@ -18,6 +23,20 @@ Page({
     wx.navigateTo({
       url: '../logs/logs'
     })
+  },
+  bindFormInput: function (e) {
+    console.log(e)
+    const feildName = e.currentTarget.dataset.name
+    if (feildName === 'invertColors') {
+      this.setData({
+        [feildName]: !this.data.invertColors
+      })
+    }
+    if (feildName === 'threshold') {
+      this.setData({
+        [feildName]: isNaN(parseInt(e.detail.value)) ? 128 : parseInt(e.detail.value)
+      })
+    }
   },
   onChooseImage: async function () {
     const selectImageRes = await util.wxAsyncPromise('chooseImage', {
@@ -33,6 +52,9 @@ Page({
     })
     if (imageInfoRes._fail) return
     console.log('get image info', imageInfoRes.errMsg, imageInfoRes.path)
+    this.setData({
+      chooseImageInfo: imageInfoRes
+    })
     return imageInfoRes
   },
   onInitCanvas: function () {
@@ -97,6 +119,7 @@ Page({
     if (!drawCanvas) return
     const ctx = drawCanvas.getContext('2d')
     const threshold = this.data.threshold
+    const invertColors = this.data.invertColors
     this.setData({
       loading: true
     })
@@ -105,9 +128,9 @@ Page({
     for (let i = 0; i < data.length; i += 4) {
       let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
       avg > threshold ? avg = 255 : avg = 0;
-      data[i] = avg; // red
-      data[i + 1] = avg; // green
-      data[i + 2] = avg; // blue
+      data[i] = invertColors ? 255 - avg : avg; // red
+      data[i + 1] = invertColors ? 255 - avg : avg; // green
+      data[i + 2] = invertColors ? 255 - avg : avg; // blue
     }
     ctx.putImageData(imageData, 0, 0);
     this.setData({
