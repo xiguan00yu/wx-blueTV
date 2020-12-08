@@ -25,7 +25,6 @@ Page({
     })
   },
   bindFormInput: function (e) {
-    console.log(e)
     const feildName = e.currentTarget.dataset.name
     if (feildName === 'invertColors') {
       this.setData({

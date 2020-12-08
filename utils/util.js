@@ -87,9 +87,50 @@ function delay(time = 1) {
   })
 }
 
+
+function str2ab(str) {
+  let buf = new ArrayBuffer(str.length * 2);
+  let bufView = new Uint16Array(buf);
+  for (let i = 0, strLen = str.length; i < strLen; i++) {
+    bufView[i] = str.charCodeAt(i);
+  }
+  return buf;
+}
+
+function arr2ab(data) {
+  const t_buffer = new ArrayBuffer(data.length)
+  const t_dv = new DataView(t_buffer)
+  data.forEach((b, offset) => t_dv.setUint8(offset, parseInt(b)))
+  return t_buffer;
+}
+
+/**
+ * @param {*} method String
+ * @param {*} data 16 number arr
+ */
+function all2ab(method, data, sep = '|') {
+  const buf = new ArrayBuffer(method.length + sep.length + data.length);
+  const u8a = new Uint8Array(buf);
+  for (let i = 0, strLen = method.length; i < strLen; i++) {
+    u8a[i] = method.charCodeAt(i);
+  }
+  const offset_sep = method.length
+  for (let i = 0; i < sep.length; i++) {
+    u8a[offset_sep + i] = sep.charCodeAt(i);
+  }
+  const offset_data = method.length + sep.length;
+  for (let i = 0, dataLen = data.length; i < dataLen; i++) {
+    u8a[offset_data + i] = parseInt(data[i])
+  }
+  return buf
+}
+
 module.exports = {
   formatTime,
   wxAsyncPromise,
   uint8ClampedArrayToHexString,
-  delay
+  delay,
+  str2ab,
+  arr2ab,
+  all2ab
 }

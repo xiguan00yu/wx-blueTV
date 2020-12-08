@@ -147,13 +147,11 @@ Page({
       events: {
         onSendBleData: async function (data) {
           console.log('get data from canvas')
+          // for (let i = 0; i < data.length; i++) {
           for (let i = 0; i < data.length; i++) {
             const uint8StringArr = data[i];
-            const t_buffer = new ArrayBuffer(uint8StringArr.length + 1)
-            const t_dv = new DataView(t_buffer)
             // set position index
-            t_dv.setUint8(0, i)
-            uint8StringArr.forEach((b, offset) => t_dv.setUint8(offset + 1, parseInt(b)))
+            const t_buffer = util.all2ab('drawBitmap', [i, ...uint8StringArr])
             const writeResult = await util.wxAsyncPromise('writeBLECharacteristicValue', {
               deviceId,
               serviceId,
@@ -169,10 +167,32 @@ Page({
               icon: 'success',
               duration: 600
             })
-            await util.delay(0.5)
+            await util.delay(1.5)
+            if (i % 10 === 0) {
+              await util.wxAsyncPromise('setKeepScreenOn', {
+                keepScreenOn: true
+              })
+            }
           }
         },
       },
     })
+  },
+  // test bluethood string  support
+  onWirtTest: async function () {
+    const {
+      deviceId,
+      serviceId,
+      characteristicId,
+    } = this.data.connectBle
+    const t_buffer = util.all2ab('startscrollleft|', ['0xFF', '0xFF'])
+    console.log(t_buffer)
+    const writeResult = await util.wxAsyncPromise('writeBLECharacteristicValue', {
+      deviceId,
+      serviceId,
+      characteristicId,
+      value: t_buffer,
+    })
+    console.log('writeBLECharacteristicValue', writeResult.errMsg)
   }
 })
