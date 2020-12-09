@@ -3,8 +3,6 @@
 page {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  height: 100%;
   width: 100%;
   background-color: #f8f8f8;
 }
@@ -24,6 +22,14 @@ page {
 .fc {
   display: flex;
   flex-direction: column;
+}
+
+.jsb {
+  justify-content: space-between;
+}
+
+.afs {
+  align-items: flex-start;
 }
 
 .ac {

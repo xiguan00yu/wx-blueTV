@@ -143,36 +143,60 @@ Page({
       characteristicId,
     } = this.data.connectBle
     wx.navigateTo({
-      url: '../canvas/index',
+      url: '../wirte/index',
       events: {
-        onSendBleData: async function (data) {
-          console.log('get data from canvas')
-          // for (let i = 0; i < data.length; i++) {
-          for (let i = 0; i < data.length; i++) {
-            const uint8StringArr = data[i];
-            // set position index
-            const t_buffer = util.all2ab('drawBitmap', [i, ...uint8StringArr])
-            const writeResult = await util.wxAsyncPromise('writeBLECharacteristicValue', {
-              deviceId,
-              serviceId,
-              characteristicId,
-              value: t_buffer,
-            })
-            console.log('writeBLECharacteristicValue', `data index : ${i} ,`, writeResult.errMsg)
-            if (writeResult._fail) {
-              break
+        onSendBleData: async function (cmds) {
+          console.log('get data from wirte page')
+          for (let i = 0; i < cmds.length; i++) {
+            const cmdObj = cmds[i];
+            const cmd = Object.keys(cmdObj)[0]
+            const data = cmdObj[cmd]
+            // if data is [][] , need for send
+            if (Array.isArray(data) && Array.isArray(data[0])) {
+              for (let j = 0; j < data.length; j++) {
+                const uint8StringArr = data[j];
+                // set position index
+                const t_buffer = util.all2ab(cmd, [j, ...uint8StringArr])
+                const writeResult = await util.wxAsyncPromise('writeBLECharacteristicValue', {
+                  deviceId,
+                  serviceId,
+                  characteristicId,
+                  value: t_buffer,
+                })
+                console.log('writeBLECharacteristicValue', `CMD : ${cmd}`, `data index : ${i}-${j} ,`, writeResult.errMsg)
+                wx.showToast({
+                  title: `SEND(${j+1}/${data.length})...`,
+                  icon: 'success',
+                  duration: 1000
+                })
+                await util.delay(1.5)
+              }
             }
-            wx.showToast({
-              title: `SEND(${i+1}/${data.length})...`,
-              icon: 'success',
-              duration: 600
-            })
-            await util.delay(1.5)
-            if (i % 10 === 0) {
-              await util.wxAsyncPromise('setKeepScreenOn', {
-                keepScreenOn: true
+            // single cmd send 
+            if (Array.isArray(data) && !Array.isArray(data[0])) {
+              const t_buffer = util.all2ab(cmd, data)
+              const writeResult = await util.wxAsyncPromise('writeBLECharacteristicValue', {
+                deviceId,
+                serviceId,
+                characteristicId,
+                value: t_buffer,
               })
+              console.log('writeBLECharacteristicValue', `CMD : ${cmd}`, `data index : ${i} ,`, writeResult.errMsg)
+              if (writeResult._fail) {
+                break
+              }
+              wx.showToast({
+                title: `SEND(${i+1}/${cmds.length})...`,
+                icon: 'success',
+                duration: 600
+              })
+              await util.delay(1.5)
             }
+            // if (i % 10 === 0) {
+            //   await util.wxAsyncPromise('setKeepScreenOn', {
+            //     keepScreenOn: true
+            //   })
+            // }
           }
         },
       },

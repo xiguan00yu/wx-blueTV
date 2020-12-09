@@ -1,8 +1,9 @@
 /**index.wxss**/
 .container {
-  flex: 1;
   display: flex;
   flex-direction: column;
+  padding-bottom: 40px;
+  overflow: auto;
 }
 
 #canvas_box {
@@ -31,6 +32,29 @@
   bottom: 0;
 }
 
-.threshold-input {
+input {
   border-bottom: 1px solid #f8f8f8;
+}
+
+.threshold-input {
+  text-align: right;
+}
+
+.byte-input {
+  text-align: center;
+}
+
+.mini-input {
+  width: 80px;
+  color: #888888;
+}
+
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: #fff;
+  border-top: 1px solid #f8f8f8;
 }

@@ -17,7 +17,16 @@ Page({
     fixedSize: {
       width: 128,
       height: 64
-    }
+    },
+    // display options
+    clearDisplay: false,
+    stopscroll: false,
+    startscrollleft: false,
+    startscrollleft_avg1: '0x00',
+    startscrollleft_avg2: '0x0F',
+    startscrollright: false,
+    startscrollright_avg1: '0x00',
+    startscrollright_avg2: '0x0F',
   },
   toLogScreen: function () {
     wx.navigateTo({
@@ -25,15 +34,21 @@ Page({
     })
   },
   bindFormInput: function (e) {
+    const feildType = e.currentTarget.dataset.type
     const feildName = e.currentTarget.dataset.name
-    if (feildName === 'invertColors') {
-      this.setData({
-        [feildName]: !this.data.invertColors
+    if (feildName === 'threshold') {
+      return this.setData({
+        [feildName]: isNaN(parseInt(e.detail.value)) ? 128 : parseInt(e.detail.value)
       })
     }
-    if (feildName === 'threshold') {
-      this.setData({
-        [feildName]: isNaN(parseInt(e.detail.value)) ? 128 : parseInt(e.detail.value)
+    if (feildType === 'bool') {
+      return this.setData({
+        [feildName]: !this.data[feildName]
+      })
+    }
+    if (feildType === 'input') {
+      return this.setData({
+        [feildName]: e.detail.value
       })
     }
   },
@@ -77,7 +92,7 @@ Page({
           canvas,
         });
         console.log('init canvas success')
-        this.onChooseImageWithDraw();
+        // this.onChooseImageWithDraw();
       });
   },
   onDrawImage: async function (imagePath, imageWidth, imageHeight, ) {
@@ -114,6 +129,7 @@ Page({
   },
   // 图片黑白处理
   onConvertImage: async function () {
+    if (!this.data.chooseImageInfo) return
     const drawCanvas = this.data.canvas
     if (!drawCanvas) return
     const ctx = drawCanvas.getContext('2d')
@@ -136,9 +152,10 @@ Page({
       loading: false
     })
   },
-  onWirteByBle: async function () {
+  getDrawImageData: function () {
+    if (!this.data.chooseImageInfo) return null
     const drawCanvas = this.data.canvas
-    if (!drawCanvas) return
+    if (!drawCanvas) return null
     const splitArrayLength = this.data.splitSendDataLength
     const drawImageSize = this.data.fixedSize
     const ctx = drawCanvas.getContext('2d')
@@ -151,7 +168,7 @@ Page({
       convertImageHexString: bleData
     })
     // split string and group arr , splitArrayLength unit
-    const uint8Arr = bleData
+    return bleData
       .replace('\n', '')
       .split(',')
       .filter(b => b.includes('0'))
@@ -163,13 +180,44 @@ Page({
         arr.push(lastUnitArr)
         return arr
       }, [])
+  },
+  onWirteByBle: async function () {
+    // obj => {cmd:data}
+    const blueData = []
+    const sortCmd = ['clearDisplay', 'drawBitmap', 'startscrollleft', 'startscrollright', 'stopscroll']
+    sortCmd.forEach(cmd => {
+      switch (cmd) {
+        case 'clearDisplay':
+        case 'stopscroll':
+          if (this.data[cmd]) {
+            blueData.push({
+              [cmd]: []
+            })
+          }
+          break;
+        case 'startscrollleft':
+        case 'startscrollright':
+          if (this.data[cmd]) {
+            blueData.push({
+              [cmd]: [this.data[`${cmd}_avg1`], this.data[`${cmd}_avg2`]]
+            })
+          }
+          break;
+        case 'drawBitmap':
+          const imageData = this.getDrawImageData()
+          if (imageData) {
+            blueData.push({
+              [cmd]: imageData
+            })
+          }
+          break;
+        default:
+          break;
+      }
+    })
     // for send blueData
     const eventChannel = this.getOpenerEventChannel()
-    eventChannel.emit('onSendBleData', uint8Arr);
-    this.setData({
-      loading: false,
-    })
-    // wx.navigateBack()
+    eventChannel.emit('onSendBleData', blueData);
   },
   onReady: function () {
     this.onInitCanvas()
