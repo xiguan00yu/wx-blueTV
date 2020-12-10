@@ -27,6 +27,11 @@ Page({
     startscrollright: false,
     startscrollright_avg1: '0x00',
     startscrollright_avg2: '0x0F',
+    println_is: false,
+    println_text: 'HELLO WORLD',
+    println_fontSize: 1,
+    println_font_cursor_x: 0,
+    println_font_cursor_y: 0,
   },
   toLogScreen: function () {
     wx.navigateTo({
@@ -184,7 +189,7 @@ Page({
   onWirteByBle: async function () {
     // obj => {cmd:data}
     const blueData = []
-    const sortCmd = ['clearDisplay', 'drawBitmap', 'startscrollleft', 'startscrollright', 'stopscroll']
+    const sortCmd = ['clearDisplay', 'println', 'drawBitmap', 'startscrollleft', 'startscrollright', 'stopscroll']
     sortCmd.forEach(cmd => {
       switch (cmd) {
         case 'clearDisplay':
@@ -203,6 +208,16 @@ Page({
             })
           }
           break;
+        case 'println':
+          if (this.data.println_is) {
+            blueData.push({
+              [cmd]: {
+                params: [this.data.println_fontSize, this.data.println_font_cursor_x, this.data.println_font_cursor_y],
+                extra: this.data.println_text
+              }
+            })
+          }
+          break;
         case 'drawBitmap':
           const imageData = this.getDrawImageData()
           if (imageData) {
@@ -215,6 +230,7 @@ Page({
           break;
       }
     })
+    console.log('blueData', blueData)
     // for send blueData
     const eventChannel = this.getOpenerEventChannel()
     eventChannel.emit('onSendBleData', blueData);

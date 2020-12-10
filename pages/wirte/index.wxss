@@ -40,6 +40,10 @@ input {
   text-align: right;
 }
 
+.font-size-input {
+  text-align: right;
+}
+
 .byte-input {
   text-align: center;
 }

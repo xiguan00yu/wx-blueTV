@@ -108,19 +108,33 @@ function arr2ab(data) {
  * @param {*} method String
  * @param {*} data 16 number arr
  */
-function all2ab(method, data, sep = '|') {
-  const buf = new ArrayBuffer(method.length + sep.length + data.length);
+function all2ab(method, data, extra = '', method_sep = '|', data_sep = '-') {
+  const isBuildExtra = extra.length !== 0
+  const bufLength = method.length + method_sep.length + data.length + (
+    isBuildExtra ? extra.length + data_sep.length : 0
+  )
+  const buf = new ArrayBuffer(bufLength);
   const u8a = new Uint8Array(buf);
   for (let i = 0, strLen = method.length; i < strLen; i++) {
     u8a[i] = method.charCodeAt(i);
   }
-  const offset_sep = method.length
-  for (let i = 0; i < sep.length; i++) {
-    u8a[offset_sep + i] = sep.charCodeAt(i);
+  const offset_method_sep = method.length
+  for (let i = 0; i < method_sep.length; i++) {
+    u8a[offset_method_sep + i] = method_sep.charCodeAt(i);
   }
-  const offset_data = method.length + sep.length;
+  const offset_data = method_sep.length + offset_method_sep;
   for (let i = 0, dataLen = data.length; i < dataLen; i++) {
     u8a[offset_data + i] = parseInt(data[i])
+  }
+  if(isBuildExtra){
+    const offset_data_sep = offset_data + data.length
+    for (let i = 0; i < data_sep.length; i++) {
+      u8a[offset_data_sep + i] = data_sep.charCodeAt(i);
+    }
+    const offset_extra = data_sep.length + offset_data_sep;
+    for (let i = 0, extraLen = extra.length; i < extraLen; i++) {
+      u8a[offset_extra + i] = extra.charCodeAt(i);
+    }
   }
   return buf
 }

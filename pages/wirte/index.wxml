@@ -9,8 +9,32 @@
 			<checkbox class="m-1" value="{{clearDisplay}}" data-type="bool" data-name="clearDisplay" bindtap="bindFormInput" />
 		</view>
 	</view>
+	<!-- text setup -->
+	<view class="fc top-bar m-1" style="margin-top:0;">
+		<view class="frn jsb">
+			<text class="p m-1">2.1 PRINT TEXT</text>
+			<checkbox class="m-1" value="{{println_is}}" data-type="bool" data-name="println_is" bindtap="bindFormInput" />
+		</view>
+		<view class="fc" wx:if="{{!!println_is}}">
+		<view class="frn jsb">
+				<text class="p m-1">Print Text: </text>
+				<input class="font-size-input m-1" maxlength="12" type="string" data-type="input" data-name="println_text" bindinput="bindFormInput" value="{{println_text}}" />
+			</view>
+			<view class="frn jsb">
+				<text class="p m-1">Font Size: </text>
+				<input class="mini-input font-size-input m-1" maxlength="1" type="number" data-type="input" data-name="println_fontSize" bindinput="bindFormInput" value="{{println_fontSize}}" />
+			</view>
+			<view class="frn jsb">
+				<text class="p m-1">Cursor_X: </text>
+				<input class="mini-input byte-input m-1" maxlength="3" type="number" data-type="input" data-name="println_font_cursor_x" bindinput="bindFormInput" value="{{println_font_cursor_x}}" />
+				<text class="p m-1">Cursor_Y: </text>
+				<input class="mini-input byte-input m-1" maxlength="3" type="number" data-type="input" data-name="println_font_cursor_y" bindinput="bindFormInput" value="{{println_font_cursor_y}}" />
+			</view>
+		</view>
+	</view>
+	<!-- image setup -->
 	<view class="frn top-bar m-1" bindlongtap="toLogScreen">
-		<text class="p m-1">2. DRAW IMAGE</text>
+		<text class="p m-1">2.2 DRAW IMAGE</text>
 		<button type="primary" size="mini" catchtap="onChooseImageWithDraw">CHOOSE</button>
 		<button type="default" size="mini" catchtap="onConvertImage">CONVERT</button>
 	</view>
@@ -26,12 +50,14 @@
 	</view>
 	<canvas type="2d" disable-scroll="true" id="canvas_box" style="width:{{fixedSize.width}}px;height:{{fixedSize.height}}px">
 	</canvas>
+	<!-- stop scroll setup -->
 	<view class="fc top-bar m-1" style="margin-top:0;">
 		<view class="frn jsb">
 			<text class="p m-1">3. Stop display Scroll: </text>
 			<checkbox class="m-1" value="{{stopscroll}}" data-type="bool" data-name="stopscroll" bindtap="bindFormInput" />
 		</view>
 	</view>
+	<!-- start scroll left setup -->
 	<view class="fc top-bar m-1" style="margin-top:0;">
 		<view class="frn jsb">
 			<text class="p m-1">4. Start display Scroll Left: </text>
@@ -44,6 +70,7 @@
 			<input class="mini-input byte-input m-1" maxlength="4" type="number" data-type="input" data-name="startscrollleft_avg1" bindinput="bindFormInput" value="{{startscrollleft_avg2}}" />
 		</view>
 	</view>
+	<!-- start scroll right setup -->
 	<view class="fc top-bar m-1" style="margin-top:0;">
 		<view class="frn jsb">
 			<text class="p m-1">5. Start display Scroll Right: </text>

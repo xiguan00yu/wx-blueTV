@@ -190,6 +190,26 @@ Page({
                 icon: 'success',
                 duration: 600
               })
+              await util.delay(2)
+            }
+            // single cmd object
+            if (!!data && typeof data === 'object' && !Array.isArray(data)) {
+              const t_buffer = util.all2ab(cmd, data.params, data.extra)
+              const writeResult = await util.wxAsyncPromise('writeBLECharacteristicValue', {
+                deviceId,
+                serviceId,
+                characteristicId,
+                value: t_buffer,
+              })
+              console.log('writeBLECharacteristicValue', `CMD : ${cmd}`, `data index : ${i} ,`, writeResult.errMsg)
+              if (writeResult._fail) {
+                break
+              }
+              wx.showToast({
+                title: `SEND(${i+1}/${cmds.length})...`,
+                icon: 'success',
+                duration: 600
+              })
               await util.delay(1.5)
             }
             // if (i % 10 === 0) {
@@ -209,8 +229,7 @@ Page({
       serviceId,
       characteristicId,
     } = this.data.connectBle
-    const t_buffer = util.all2ab('startscrollleft|', ['0xFF', '0xFF'])
-    console.log(t_buffer)
+    const t_buffer = util.all2ab('println', ['1', '0', '0'], 'success~')
     const writeResult = await util.wxAsyncPromise('writeBLECharacteristicValue', {
       deviceId,
       serviceId,
